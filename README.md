@@ -4,7 +4,7 @@
   <img src="opla.jpg" width="600" alt="Opla - tools spelled out in ancient metalworking tools">
 </p>
 
-GPU-optimized Greek POS tagger and dependency parser. **215x faster** than
+GPU-optimized diachronic Greek POS tagger and dependency parser. **215x faster** than
 [gr-nlp-toolkit](https://github.com/nlpaueb/gr-nlp-toolkit) on real-world
 Greek text, with identical POS output and near-identical dependency parsing.
 Supports Modern Greek, Ancient Greek, and Medieval Greek.
