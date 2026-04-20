@@ -16,6 +16,9 @@ dependencies = [
 [project.optional-dependencies]
 lemma = ["dilemma"]
 
+[tool.setuptools.packages.find]
+include = ["opla*"]
+
 [tool.pytest.ini_options]
 markers = [
     "slow: tests requiring model weights (skip by default, run with --run-slow)",
