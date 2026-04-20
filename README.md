@@ -280,7 +280,7 @@ python -m pytest tests/ -x -v
 python -m pytest tests/ -x -v --run-slow
 ```
 
-CI runs the full suite (including `--run-slow`) on a self-hosted GPU runner.
+CI runs the fast suite on GitHub-hosted runners. The slow suite (`--run-slow`) requires model weights and is run manually or on a GPU box.
 
 ## Language coverage
 
