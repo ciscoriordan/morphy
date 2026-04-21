@@ -3,7 +3,7 @@ requires = ["setuptools>=68.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "opla"
+name = "opla-nlp"
 dynamic = ["version"]
 description = "GPU-optimized diachronic Greek POS tagger and dependency parser"
 readme = "README.md"

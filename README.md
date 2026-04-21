@@ -17,8 +17,12 @@ custom-trained heads on [Ancient-Greek-BERT](https://huggingface.co/pranaydeeps/
 ## Installation
 
 ```bash
-pip install opla
+pip install opla-nlp
 ```
+
+The import name is `opla` (`from opla import Opla`); the PyPI
+distribution is `opla-nlp` because `opla` was blocked by PyPI's
+similar-name filter.
 
 Or from source:
 

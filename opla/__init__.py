@@ -21,7 +21,7 @@ from .decode import decode_batch
 from .segment import segment
 from ._revisions import BERT_REVISIONS, OPLA_WEIGHTS_REV
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 
 # Maximum subwords per dynamic batch before flushing to GPU
 _DEFAULT_MAX_SUBWORDS = 2048
