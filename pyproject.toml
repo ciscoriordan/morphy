@@ -4,20 +4,45 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "opla"
-version = "0.1.0"
-description = "GPU-optimized Greek POS tagger + dependency parser"
+dynamic = ["version"]
+description = "GPU-optimized diachronic Greek POS tagger and dependency parser"
+readme = "README.md"
 requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "Francisco Riordan" }]
+keywords = ["greek", "nlp", "pos-tagging", "dependency-parsing", "ancient-greek"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: Greek",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Text Processing :: Linguistic",
+]
 dependencies = [
-    "torch",
+    "torch>=2.5",
     "transformers",
     "huggingface-hub",
 ]
 
 [project.optional-dependencies]
-lemma = ["dilemma"]
+onnx = ["onnxruntime"]
+
+[project.urls]
+Homepage = "https://github.com/ciscoriordan/opla"
+Repository = "https://github.com/ciscoriordan/opla"
+Issues = "https://github.com/ciscoriordan/opla/issues"
 
 [tool.setuptools.packages.find]
 include = ["opla*"]
+
+[tool.setuptools.dynamic]
+version = { attr = "opla.__version__" }
 
 [tool.pytest.ini_options]
 markers = [

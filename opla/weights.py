@@ -3,6 +3,8 @@
 import torch
 from huggingface_hub import hf_hub_download
 
+from ._revisions import GR_NLP_TOOLKIT_REV
+
 
 _REPO_ID = "AUEB-NLP/gr-nlp-toolkit"
 _POS_FILENAME = "pos_processor"
@@ -14,6 +16,7 @@ def _download_weights(filename: str, cache_dir: str | None = None) -> str:
     return hf_hub_download(
         repo_id=_REPO_ID,
         filename=filename,
+        revision=GR_NLP_TOOLKIT_REV,
         cache_dir=cache_dir,
     )
 

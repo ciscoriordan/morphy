@@ -26,6 +26,7 @@ from transformers import AutoModel, AutoTokenizer
 
 from opla.model import OplaModel
 from opla.labels import pos_labels, dp_labels
+from opla._revisions import BERT_REVISIONS
 
 BERT_MODELS = {
     "el": "nlpaueb/bert-base-greek-uncased-v1",
@@ -165,8 +166,9 @@ class JointWrapper(torch.nn.Module):
 def export(lang: str, weights_path: Path, output_dir: Path):
     """Export model to ONNX."""
     bert_name = BERT_MODELS[lang]
-    print(f"Loading BERT: {bert_name}")
-    tokenizer = AutoTokenizer.from_pretrained(bert_name)
+    bert_rev = BERT_REVISIONS.get(bert_name)
+    print(f"Loading BERT: {bert_name} @ {bert_rev[:8] if bert_rev else 'HEAD'}")
+    tokenizer = AutoTokenizer.from_pretrained(bert_name, revision=bert_rev)
 
     # Load checkpoint
     print(f"Loading weights: {weights_path}")
@@ -178,11 +180,11 @@ def export(lang: str, weights_path: Path, output_dir: Path):
     shared = ckpt.get("lang", lang) in ("grc", "med")
 
     if shared:
-        bert = AutoModel.from_pretrained(bert_name)
+        bert = AutoModel.from_pretrained(bert_name, revision=bert_rev)
         model = OplaModel(bert, feat_sizes=feat_sizes, num_deprels=num_deprels)
     else:
-        pos_bert = AutoModel.from_pretrained(bert_name)
-        dp_bert = AutoModel.from_pretrained(bert_name)
+        pos_bert = AutoModel.from_pretrained(bert_name, revision=bert_rev)
+        dp_bert = AutoModel.from_pretrained(bert_name, revision=bert_rev)
         model = OplaModel(pos_bert, dp_bert, feat_sizes=feat_sizes,
                           num_deprels=num_deprels)
 

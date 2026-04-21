@@ -19,6 +19,7 @@ from .weights import load_weights
 from .tokenize import batch_tokenize
 from .decode import decode_batch
 from .segment import segment
+from ._revisions import BERT_REVISIONS, OPLA_WEIGHTS_REV
 
 __version__ = "0.2.0"
 
@@ -108,8 +109,9 @@ class Opla:
 
         # Fall back to gr-nlp-toolkit dual-backbone weights
         bert_name = _BERT_MODELS["el"]
-        pos_bert = AutoModel.from_pretrained(bert_name)
-        dp_bert = AutoModel.from_pretrained(bert_name)
+        bert_rev = BERT_REVISIONS.get(bert_name)
+        pos_bert = AutoModel.from_pretrained(bert_name, revision=bert_rev)
+        dp_bert = AutoModel.from_pretrained(bert_name, revision=bert_rev)
         # Use MG-sized label counts for gr-nlp-toolkit weight compatibility
         self.model = OplaModel(
             pos_bert, dp_bert,
@@ -126,7 +128,9 @@ class Opla:
         feat_sizes = ckpt.get("feat_sizes")
         num_deprels = ckpt.get("num_deprels")
 
-        bert = AutoModel.from_pretrained(bert_name)
+        bert = AutoModel.from_pretrained(
+            bert_name, revision=BERT_REVISIONS.get(bert_name)
+        )
         self.model = OplaModel(
             bert,
             feat_sizes=feat_sizes,
@@ -163,6 +167,7 @@ class Opla:
                     checkpoint = hf_hub_download(
                         repo_id="ciscoriordan/opla",
                         filename=f"weights/{self.lang}/opla_{self.lang}.pt",
+                        revision=OPLA_WEIGHTS_REV,
                     )
                 except Exception:
                     raise FileNotFoundError(

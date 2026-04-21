@@ -4,7 +4,7 @@
   <img src="opla.jpg" width="600" alt="Opla - tools spelled out in ancient metalworking tools">
 </p>
 
-GPU-optimized diachronic Greek POS tagger and dependency parser. **215x faster** than
+GPU-optimized diachronic Greek POS tagger and dependency parser. **~25x faster** than
 [gr-nlp-toolkit](https://github.com/nlpaueb/gr-nlp-toolkit) on real-world
 Greek text, with identical POS output and near-identical dependency parsing.
 Supports Modern Greek, Ancient Greek, and Medieval Greek.
@@ -17,16 +17,32 @@ custom-trained heads on [Ancient-Greek-BERT](https://huggingface.co/pranaydeeps/
 ## Installation
 
 ```bash
+pip install opla
+```
+
+Or from source:
+
+```bash
 pip install -e .
 ```
 
 Requires *PyTorch* (2.5+), *Transformers*, and *huggingface-hub*. MG weights are
 downloaded from [AUEB-NLP/gr-nlp-toolkit](https://huggingface.co/AUEB-NLP/gr-nlp-toolkit)
-on first use. AG and Medieval weights are downloaded from
-[ciscoriordan/opla](https://huggingface.co/ciscoriordan/opla).
+on first use; AG and Medieval weights from
+[ciscoriordan/opla](https://huggingface.co/ciscoriordan/opla). Each Opla
+release pins exact HuggingFace Hub commit SHAs for all four upstream
+sources (see `opla/_revisions.py`), so the same Opla version always pulls
+byte-identical weights.
 
 Optional: install [Dilemma](https://github.com/ciscoriordan/dilemma) for
-integrated lemmatization.
+integrated lemmatization:
+
+```bash
+pip install git+https://github.com/ciscoriordan/dilemma.git
+```
+
+(Dilemma is not on PyPI; a same-named unrelated package exists there, so
+there is no `opla[lemma]` extra.)
 
 ## Usage
 
@@ -102,21 +118,30 @@ which handles the normalization.
 
 ## Why not gr-nlp-toolkit?
 
-The trained BERT weights are good. The inference code is not.
-We submitted [PR #29](https://github.com/nlpaueb/gr-nlp-toolkit/pull/29)
-upstream (not merged). Opla goes further.
+The trained BERT weights are good. The inference code needed work.
+Our [PR #29](https://github.com/nlpaueb/gr-nlp-toolkit/pull/29) fixing the
+redundant BERT forward passes was merged upstream on 2026-04-18, accounting
+for ~8.5x of the speedup measured below. Opla goes further on batching,
+VRAM, output filtering, and AG/Medieval support.
 
 | Issue | *gr-nlp-toolkit* | Opla |
 |-------|-----------------|------|
-| BERT forward passes per sentence | **19** (POS loops over 17 features, calling BERT each time; DP calls BERT twice) | **2** (one per task) |
+| BERT forward passes per sentence | Was **19** (POS looped over 17 features, calling BERT each time; DP called BERT twice), now **2** after PR #29 | **2** (one per task) |
 | Batching | `batch_size=1` hardcoded | Dynamic batching (~64-150 sentences) |
-| BERT instances in VRAM | 2 identical copies (~880 MB wasted) | 2 distinct copies (needed - weights diverged during training) |
+| BERT instances in VRAM | 2 identical copies (~880 MB wasted) | 2 distinct copies (needed, weights diverged during training) |
 | `_` features in output | Emitted (e.g. `Case: _` on verbs) | Suppressed |
 | Weight loading | `strict=False` (silent failures) | Validated on load |
+| Ancient/Medieval Greek | Not supported | `lang="grc"` and `lang="med"` |
 
 ### Benchmark
 
-| | *gr-nlp-toolkit* | Opla | Speedup |
+Numbers below are against *gr-nlp-toolkit* **before** PR #29 was merged (the
+version on PyPI at time of measurement). Post-PR-#29, upstream's per-sentence
+cost drops by ~8.5x, so Opla's advantage on the same workload becomes ~25x
+rather than 215x, driven mostly by dynamic batching. Opla still uniquely
+covers Ancient and Medieval Greek.
+
+| | *gr-nlp-toolkit* (pre-PR-#29) | Opla | Speedup |
 |---|---|---|---|
 | **Full Iliad (24 books, 146K tokens)** | 4,193s (70 min) | **19.5s** | **215x** |
 | Book 1 (611 sentences, 5,772 tokens) | 169.4s | 1.0s | 170x |
@@ -406,7 +431,9 @@ Greek. Each tool groups `med` with whichever period best serves its task.
 **MG task heads:**
 [gr-nlp-toolkit](https://github.com/nlpaueb/gr-nlp-toolkit) by AUEB-NLP.
 POS and DP head architectures reproduced from *gr-nlp-toolkit*'s source code
-to ensure weight compatibility.
+to ensure weight compatibility. The redundant BERT forward passes fixed by
+[PR #29](https://github.com/nlpaueb/gr-nlp-toolkit/pull/29) were discovered
+while using *gr-nlp-toolkit* to instrument Opla.
 
 **Ancient Greek backbone:**
 [Ancient-Greek-BERT](https://huggingface.co/pranaydeeps/Ancient-Greek-BERT)
@@ -446,10 +473,6 @@ https://github.com/ciscoriordan/opla
 
 - [Dilemma](https://github.com/ciscoriordan/dilemma) - Greek lemmatizer (MG + AG + Medieval)
 - [Dragoman](https://huggingface.co/ciscoriordan/dragoman) - Greek word alignment model
-
-## Upcoming
-
-- `pip install opla` - PyPI package for easy installation
 
 ## License
 

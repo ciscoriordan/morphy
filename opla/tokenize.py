@@ -11,6 +11,8 @@ from typing import NamedTuple
 import torch
 from transformers import AutoTokenizer
 
+from ._revisions import GREEK_BERT_REV
+
 
 _TOKENIZER_NAME = "nlpaueb/bert-base-greek-uncased-v1"
 
@@ -36,7 +38,9 @@ class BatchEncoding(NamedTuple):
 def _get_tokenizer():
     """Lazy-load and cache the tokenizer."""
     if not hasattr(_get_tokenizer, "_tok"):
-        _get_tokenizer._tok = AutoTokenizer.from_pretrained(_TOKENIZER_NAME)
+        _get_tokenizer._tok = AutoTokenizer.from_pretrained(
+            _TOKENIZER_NAME, revision=GREEK_BERT_REV
+        )
     return _get_tokenizer._tok
 
 
