@@ -21,7 +21,7 @@ jobs:
       - name: Verify tag matches package version
         run: |
           TAG="${GITHUB_REF_NAME#v}"
-          PKG=$(python -c "import tomllib,pathlib; d=tomllib.loads(pathlib.Path('pyproject.toml').read_text()); import importlib.util,sys; spec=importlib.util.spec_from_file_location('o','opla/__init__.py'); m=importlib.util.module_from_spec(spec); spec.loader.exec_module(m); print(m.__version__)")
+          PKG=$(python -c "import re,pathlib; m=re.search(r'^__version__\s*=\s*[\"\\']([^\"\\']+)[\"\\']', pathlib.Path('opla/__init__.py').read_text(), re.M); print(m.group(1))")
           if [ "$TAG" != "$PKG" ]; then
             echo "Tag v$TAG does not match opla.__version__ ($PKG)"
             exit 1
