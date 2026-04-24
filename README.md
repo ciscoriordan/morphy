@@ -4,7 +4,7 @@
   <img src="opla-social.jpg" width="720" alt="Opla - diachronic Greek POS tagger and dependency parser">
 </p>
 
-GPU-optimized diachronic Greek POS tagger and dependency parser. **~25x faster** than
+GPU-optimized diachronic Greek POS tagger and dependency parser. ~25x faster than
 [gr-nlp-toolkit](https://github.com/nlpaueb/gr-nlp-toolkit) on real-world
 Greek text, with identical POS output and near-identical dependency parsing.
 Supports Modern Greek, Ancient Greek, and Medieval Greek.
@@ -130,7 +130,7 @@ VRAM, output filtering, and AG/Medieval support.
 
 | Issue | *gr-nlp-toolkit* | Opla |
 |-------|-----------------|------|
-| BERT forward passes per sentence | Was **19** (POS looped over 17 features, calling BERT each time; DP called BERT twice), now **2** after PR #29 | **2** (one per task) |
+| BERT forward passes per sentence | Was 19 (POS looped over 17 features, calling BERT each time; DP called BERT twice), now 2 after PR #29 | 2 (one per task) |
 | Batching | `batch_size=1` hardcoded | Dynamic batching (~64-150 sentences) |
 | BERT instances in VRAM | 2 identical copies (~880 MB wasted) | 2 distinct copies (needed, weights diverged during training) |
 | `_` features in output | Emitted (e.g. `Case: _` on verbs) | Suppressed |
@@ -139,7 +139,7 @@ VRAM, output filtering, and AG/Medieval support.
 
 ### Benchmark
 
-Numbers below are against *gr-nlp-toolkit* **before** PR #29 was merged (the
+Numbers below are against *gr-nlp-toolkit* before PR #29 was merged (the
 version on PyPI at time of measurement). Post-PR-#29, upstream's per-sentence
 cost drops by ~8.5x, so Opla's advantage on the same workload becomes ~25x
 rather than 215x, driven mostly by dynamic batching. Opla still uniquely
@@ -147,7 +147,7 @@ covers Ancient and Medieval Greek.
 
 | | *gr-nlp-toolkit* (pre-PR-#29) | Opla | Speedup |
 |---|---|---|---|
-| **Full Iliad (24 books, 146K tokens)** | 4,193s (70 min) | **19.5s** | **215x** |
+| Full Iliad (24 books, 146K tokens) | 4,193s (70 min) | 19.5s | 215x |
 | Book 1 (611 sentences, 5,772 tokens) | 169.4s | 1.0s | 170x |
 | BERT passes per sentence | 19 | 2 (el) / 1 (grc) | 9.5-19x |
 | Batching | 1 sentence | ~64-150 sentences | 64x |
@@ -160,9 +160,9 @@ Tested on all 611 sentences of Iliad Book 1 (Polylas MG translation,
 
 | Output | Match rate |
 |--------|-----------|
-| UPOS tags | **100.0%** (5,772/5,772) |
-| Dependency relations | **99.8%** (5,760/5,772) |
-| Dependency heads | **98.2%** (5,670/5,772) |
+| UPOS tags | 100.0% (5,772/5,772) |
+| Dependency relations | 99.8% (5,760/5,772) |
+| Dependency heads | 98.2% (5,670/5,772) |
 
 POS tagging is identical. The small head index differences come from how
 padding affects biaffine attention scores in batched vs unbatched mode.
@@ -333,7 +333,7 @@ Tested on Iakovos Polylas's 1892 Iliad translation (Katharevousa-influenced
 verse), which includes archaic verb forms, accusative -ν endings, polytonic
 remnants, and poetic elisions not found in standard MG.
 
-**HNC Golden Corpus:** The [Hellenic National Corpus](https://inventory.clarin.gr/corpus/870)
+HNC Golden Corpus: the [Hellenic National Corpus](https://inventory.clarin.gr/corpus/870)
 Gold Standard (88K tokens, CLARIN:EL, openUnder-PSI) provides POS-tagged
 Modern Greek text but uses the ILSP tagset (386 tags like `NoCmFeSgNm`)
 rather than UD. The coarse categories map to UPOS (No->NOUN, Vb->VERB,
@@ -355,20 +355,20 @@ and preprocessing as GreekBERT (uncased, deaccented).
 POS and DP task heads are jointly trained on 1.1M tokens from three
 treebank sources, then fine-tuned with DiGreC data mixed in:
 
-- [**UD_Ancient_Greek-Perseus**](https://universaldependencies.org/treebanks/grc_perseus/) - 203K tokens (Homer, Sophocles, Plato, Herodotus, Hesiod)
-- [**UD_Ancient_Greek-PROIEL**](https://universaldependencies.org/treebanks/grc_proiel/) - 214K tokens (New Testament, Herodotus)
-- [**Gorman's Greek Dependency Trees**](https://github.com/vgorman1/Greek-Dependency-Trees) - 692K tokens converted from AGDT XML to CoNLL-U via `convert_gorman.py`, with SCONJ/AUX mapping, elision handling, and 0.1% mismatch rate
-- [**DiGreC**](https://proiel.github.io/digrec/) - 103K tokens (mixed fine-tuning, 3 epochs at lr=1e-5)
+- [UD_Ancient_Greek-Perseus](https://universaldependencies.org/treebanks/grc_perseus/) - 203K tokens (Homer, Sophocles, Plato, Herodotus, Hesiod)
+- [UD_Ancient_Greek-PROIEL](https://universaldependencies.org/treebanks/grc_proiel/) - 214K tokens (New Testament, Herodotus)
+- [Gorman's Greek Dependency Trees](https://github.com/vgorman1/Greek-Dependency-Trees) - 692K tokens converted from AGDT XML to CoNLL-U via `convert_gorman.py`, with SCONJ/AUX mapping, elision handling, and 0.1% mismatch rate
+- [DiGreC](https://proiel.github.io/digrec/) - 103K tokens (mixed fine-tuning, 3 epochs at lr=1e-5)
 
 Because POS and DP are trained jointly from the start, the `grc` model uses
 a single BERT backbone (1 forward pass per batch, vs 2 for `el`).
 
-**Dev set accuracy (combined Perseus + PROIEL + Gorman):**
+Dev set accuracy (combined Perseus + PROIEL + Gorman):
 
 | Metric | Accuracy |
 |--------|----------|
-| UPOS | **96.8%** |
-| DEPREL | **91.8%** |
+| UPOS | 96.8% |
+| DEPREL | 91.8% |
 
 AG uses an expanded label set: dual number, optative/subjunctive moods,
 middle voice, locative case, and more.
@@ -392,13 +392,13 @@ converts it to UD-compatible CoNLL-U format with refined deprel mappings
 `part` -> `nmod`/`obl` by head POS). PP restructuring handles coordination
 (first conjunct as head) and reparents dependents correctly.
 
-**Dev set accuracy (586 sentences, 12 epochs):**
+Dev set accuracy (586 sentences, 12 epochs):
 
 | Metric | Accuracy |
 |--------|----------|
-| UPOS | **96.4%** |
-| Dependency heads | **75.4%** |
-| Dependency relations | **90.2%** |
+| UPOS | 96.4% |
+| Dependency heads | 75.4% |
+| Dependency relations | 90.2% |
 | Morphological features | 97-100% per feature |
 
 Head accuracy is lower than AG because Medieval text has more complex
@@ -427,31 +427,31 @@ Greek. Each tool groups `med` with whichever period best serves its task.
 
 ## Credits
 
-**Modern Greek backbone:**
+Modern Greek backbone:
 [GreekBERT](https://huggingface.co/nlpaueb/bert-base-greek-uncased-v1) by the
 [NLP Group at Athens University of Economics and Business](http://nlp.cs.aueb.gr/)
 (AUEB-NLP). Pre-trained on Greek Wikipedia, European Parliament, and OSCAR.
 
-**MG task heads:**
+MG task heads:
 [gr-nlp-toolkit](https://github.com/nlpaueb/gr-nlp-toolkit) by AUEB-NLP.
 POS and DP head architectures reproduced from *gr-nlp-toolkit*'s source code
 to ensure weight compatibility. The redundant BERT forward passes fixed by
 [PR #29](https://github.com/nlpaueb/gr-nlp-toolkit/pull/29) were discovered
 while using *gr-nlp-toolkit* to instrument Opla.
 
-**Ancient Greek backbone:**
+Ancient Greek backbone:
 [Ancient-Greek-BERT](https://huggingface.co/pranaydeeps/Ancient-Greek-BERT)
 by Pranaydeep Singh (KU Leuven). Initialized from GreekBERT and further
 pre-trained on First1KGreek, Perseus, PROIEL, and Gorman treebanks.
 
-**AG training data:**
+AG training data:
 [UD_Ancient_Greek-Perseus](https://universaldependencies.org/treebanks/grc_perseus/)
 and [UD_Ancient_Greek-PROIEL](https://universaldependencies.org/treebanks/grc_proiel/)
 from the [Universal Dependencies](https://universaldependencies.org/) project.
 [Greek Dependency Trees](https://github.com/vgorman1/Greek-Dependency-Trees)
 by Vanessa Gorman (University of Nebraska-Lincoln).
 
-**Medieval Greek training data:**
+Medieval Greek training data:
 [DiGreC](https://proiel.github.io/digrec/) (Digitized Greek Corpus) by the
 PROIEL project. 121K tokens of Medieval Greek with morphological and syntactic
 annotation in the PROIEL scheme.
