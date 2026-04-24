@@ -42,11 +42,14 @@ Optional: install [Dilemma](https://github.com/ciscoriordan/dilemma) for
 integrated lemmatization:
 
 ```bash
-pip install git+https://github.com/ciscoriordan/dilemma.git
+pip install "dilemma[onnx] @ git+https://github.com/ciscoriordan/dilemma.git"
+python -m dilemma download
 ```
 
-(Dilemma is not on PyPI; a same-named unrelated package exists there, so
-there is no `opla[lemma]` extra.)
+The first line installs the package plus ONNX Runtime; the second downloads
+the ~1.6 GB lookup tables and model files to `~/.cache/dilemma/`. Dilemma is
+not on PyPI (a same-named unrelated package exists there), so there is no
+`opla[lemma]` extra.
 
 ## Usage
 
