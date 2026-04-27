@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Export Opla model to ONNX for CPU-only deployment.
+"""Export Morphy model to ONNX for CPU-only deployment.
 
 Exports the dual-BERT + heads architecture to ONNX format, enabling
 inference with onnxruntime instead of requiring PyTorch (~50MB vs ~2GB).
@@ -9,10 +9,10 @@ For MG models (dual BERT): exports two ONNX models (pos + dp).
 
 Usage:
     # Export AG model
-    python export_onnx.py --lang grc --weights weights/grc/opla_grc.pt
+    python export_onnx.py --lang grc --weights weights/grc/morphy_grc.pt
 
     # Export MG model
-    python export_onnx.py --lang el --weights weights/el/opla_el.pt
+    python export_onnx.py --lang el --weights weights/el/morphy_el.pt
 
     # Custom output directory
     python export_onnx.py --lang grc --output weights/grc/onnx/
@@ -24,9 +24,9 @@ from pathlib import Path
 import torch
 from transformers import AutoModel, AutoTokenizer
 
-from opla.model import OplaModel
-from opla.labels import pos_labels, dp_labels
-from opla._revisions import BERT_REVISIONS
+from morphy.model import MorphyModel
+from morphy.labels import pos_labels, dp_labels
+from morphy._revisions import BERT_REVISIONS
 
 BERT_MODELS = {
     "el": "nlpaueb/bert-base-greek-uncased-v1",
@@ -181,12 +181,12 @@ def export(lang: str, weights_path: Path, output_dir: Path):
 
     if shared:
         bert = AutoModel.from_pretrained(bert_name, revision=bert_rev)
-        model = OplaModel(bert, feat_sizes=feat_sizes, num_deprels=num_deprels)
+        model = MorphyModel(bert, feat_sizes=feat_sizes, num_deprels=num_deprels)
     else:
         pos_bert = AutoModel.from_pretrained(bert_name, revision=bert_rev)
         dp_bert = AutoModel.from_pretrained(bert_name, revision=bert_rev)
-        model = OplaModel(pos_bert, dp_bert, feat_sizes=feat_sizes,
-                          num_deprels=num_deprels)
+        model = MorphyModel(pos_bert, dp_bert, feat_sizes=feat_sizes,
+                            num_deprels=num_deprels)
 
     model.load_state_dict(ckpt["model_state_dict"], strict=False)
     model.eval()
@@ -221,7 +221,7 @@ def export(lang: str, weights_path: Path, output_dir: Path):
             elif name == "rel_scores":
                 dynamic_axes[name] = {0: "batch", 1: "seq_len", 2: "seq_len"}
 
-        out_path = output_dir / "opla_joint.onnx"
+        out_path = output_dir / "morphy_joint.onnx"
 
         print(f"Exporting joint model to {out_path}...")
         torch.onnx.export(
@@ -240,7 +240,7 @@ def export(lang: str, weights_path: Path, output_dir: Path):
         pos_wrapper.eval()
         feat_names = sorted(model.pos_heads.keys())
 
-        pos_path = output_dir / "opla_pos.onnx"
+        pos_path = output_dir / "morphy_pos.onnx"
         print(f"Exporting POS model to {pos_path}...")
         torch.onnx.export(
             pos_wrapper, (input_ids, attention_mask),
@@ -256,7 +256,7 @@ def export(lang: str, weights_path: Path, output_dir: Path):
         dp_wrapper = DpWrapper(model)
         dp_wrapper.eval()
 
-        dp_path = output_dir / "opla_dp.onnx"
+        dp_path = output_dir / "morphy_dp.onnx"
         print(f"Exporting DP model to {dp_path}...")
         torch.onnx.export(
             dp_wrapper, (input_ids, attention_mask),
@@ -289,7 +289,7 @@ def export(lang: str, weights_path: Path, output_dir: Path):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Export Opla model to ONNX")
+        description="Export Morphy model to ONNX")
     parser.add_argument("--lang", required=True, choices=["el", "grc", "med"])
     parser.add_argument("--weights", type=Path, required=True,
                         help="Path to .pt checkpoint")

@@ -7,7 +7,7 @@ from torch.nn import LeakyReLU
 from .labels import pos_labels, dp_labels
 
 
-class OplaModel(nn.Module):
+class MorphyModel(nn.Module):
     """POS tagger + dependency parser with dual BERT backbones.
 
     Uses separate BERT instances for POS and DP (matching gr-nlp-toolkit's

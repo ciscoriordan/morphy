@@ -3,7 +3,7 @@
 
 Gorman's Greek Dependency Trees use the AGDT (Ancient Greek Dependency
 Treebank) annotation scheme. This script converts to UD (Universal
-Dependencies) format for training Opla.
+Dependencies) format for training Morphy.
 
 AGDT postag: 9-position string (POS, person, number, tense, mood, voice,
 gender, case, degree). Relations: SBJ, OBJ, ATR, ADV, PRED, etc.

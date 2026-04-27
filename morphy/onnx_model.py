@@ -1,4 +1,4 @@
-"""ONNX inference backend for Opla.
+"""ONNX inference backend for Morphy.
 
 Replaces PyTorch model with onnxruntime for CPU-only deployment.
 Requires: pip install onnxruntime (~50MB vs ~2GB for torch+transformers)
@@ -9,8 +9,8 @@ import numpy as np
 from pathlib import Path
 
 
-class OplaONNX:
-    """ONNX-backed model that mimics OplaModel's forward() output."""
+class MorphyONNX:
+    """ONNX-backed model that mimics MorphyModel's forward() output."""
 
     def __init__(self, onnx_dir: Path):
         import onnxruntime as ort
@@ -22,7 +22,7 @@ class OplaONNX:
         self.feat_names = self.meta["feat_names"]
 
         # Find the ONNX model file
-        joint_path = onnx_dir / "opla_joint.onnx"
+        joint_path = onnx_dir / "morphy_joint.onnx"
         if joint_path.exists():
             self.session = ort.InferenceSession(
                 str(joint_path),
@@ -35,7 +35,7 @@ class OplaONNX:
         self._output_names = [o.name for o in self.session.get_outputs()]
 
     def __call__(self, input_ids, attention_mask):
-        """Run inference, returning outputs matching OplaModel.forward().
+        """Run inference, returning outputs matching MorphyModel.forward().
 
         Processes each sentence individually to avoid ONNX dynamic shape
         issues with BERT's internal buffers, then stacks results.

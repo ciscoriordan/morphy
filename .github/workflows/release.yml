@@ -21,9 +21,9 @@ jobs:
       - name: Verify tag matches package version
         run: |
           TAG="${GITHUB_REF_NAME#v}"
-          PKG=$(python -c "import re,pathlib; m=re.search(r'^__version__\s*=\s*[\"\\']([^\"\\']+)[\"\\']', pathlib.Path('opla/__init__.py').read_text(), re.M); print(m.group(1))")
+          PKG=$(python -c "import re,pathlib; m=re.search(r'^__version__\s*=\s*[\"\\']([^\"\\']+)[\"\\']', pathlib.Path('morphy/__init__.py').read_text(), re.M); print(m.group(1))")
           if [ "$TAG" != "$PKG" ]; then
-            echo "Tag v$TAG does not match opla.__version__ ($PKG)"
+            echo "Tag v$TAG does not match morphy.__version__ ($PKG)"
             exit 1
           fi
 
@@ -67,6 +67,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "$GITHUB_REF_NAME" \
-            --title "Opla $GITHUB_REF_NAME" \
+            --title "Morphy $GITHUB_REF_NAME" \
             --generate-notes \
             dist/*

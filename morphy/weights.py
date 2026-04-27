@@ -1,4 +1,4 @@
-"""Load and remap gr-nlp-toolkit checkpoint weights into OplaModel."""
+"""Load and remap gr-nlp-toolkit checkpoint weights into MorphyModel."""
 
 import torch
 from huggingface_hub import hf_hub_download
@@ -27,7 +27,7 @@ def load_weights(
     dp_path: str | None = None,
     device: str = "cpu",
 ):
-    """Load gr-nlp-toolkit POS + DP weights into an OplaModel (dual BERT).
+    """Load gr-nlp-toolkit POS + DP weights into a MorphyModel (dual BERT).
 
     Remaps key names:
     - POS: _bert_model.* -> pos_bert.*, _linear_dict.{feat}.* -> pos_heads.{feat}.*
@@ -71,6 +71,6 @@ def load_weights(
 
     missing, unexpected = model.load_state_dict(new_sd, strict=False)
     if missing:
-        raise RuntimeError(f"Missing keys in OplaModel: {missing}")
+        raise RuntimeError(f"Missing keys in MorphyModel: {missing}")
     if unexpected:
-        raise RuntimeError(f"Unexpected keys in OplaModel: {unexpected}")
+        raise RuntimeError(f"Unexpected keys in MorphyModel: {unexpected}")

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Upload Opla weights to HuggingFace.
+"""Upload Morphy weights to HuggingFace.
 
 Usage:
     python upload_weights.py                # upload grc weights
@@ -12,19 +12,19 @@ from pathlib import Path
 
 from huggingface_hub import HfApi
 
-REPO_ID = "ciscoriordan/opla"
+REPO_ID = "ciscoriordan/morphy"
 WEIGHTS_DIR = Path(__file__).parent / "weights"
 
 
 def upload_lang(api, lang):
     """Upload weights for a single language (PyTorch + ONNX if available)."""
-    weight_file = WEIGHTS_DIR / lang / f"opla_{lang}.pt"
+    weight_file = WEIGHTS_DIR / lang / f"morphy_{lang}.pt"
     if not weight_file.exists():
         print(f"  Skipping {lang}: {weight_file} not found")
         return False
 
     # Upload PyTorch weights
-    remote_path = f"weights/{lang}/opla_{lang}.pt"
+    remote_path = f"weights/{lang}/morphy_{lang}.pt"
     print(f"  Uploading {weight_file} -> {remote_path} ({weight_file.stat().st_size / 1e6:.0f} MB)")
     api.upload_file(
         path_or_fileobj=str(weight_file),
@@ -53,7 +53,7 @@ def upload_lang(api, lang):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Upload Opla weights to HuggingFace")
+    parser = argparse.ArgumentParser(description="Upload Morphy weights to HuggingFace")
     parser.add_argument("--lang", default="grc", choices=["grc", "med", "all"],
                         help="Which weights to upload")
     parser.add_argument("--create-repo", action="store_true",

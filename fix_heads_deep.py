@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deep linguistic correction of Opla's MG dependency heads.
+"""Deep linguistic correction of Morphy's MG dependency heads.
 
 Goes beyond structural fixes (self-loops, bad DET) to fix semantic errors:
 - Genitive modifiers attached to wrong nouns
@@ -122,7 +122,7 @@ def fix_sentence(sent, log):
         f = form(t)
 
         # --- Fix: head=0 on non-root tokens ---
-        # These are enjambed lines where Opla couldn't find a root.
+        # These are enjambed lines where Morphy couldn't find a root.
         # Attach orphan tokens to the sentence verb or root.
         if h == 0 and d != "root" and d != "punct":
             target = root_id or verb_id

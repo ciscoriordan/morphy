@@ -1,4 +1,4 @@
-# Releasing Opla
+# Releasing Morphy
 
 ## First-time setup
 
@@ -7,9 +7,9 @@ needed, uses GitHub OIDC):
 
 1. Register the project on PyPI: https://pypi.org/manage/account/publishing/
 2. Add a pending publisher:
-   - PyPI Project Name: `opla`
+   - PyPI Project Name: `morphy-nlp`
    - Owner: `ciscoriordan`
-   - Repository: `opla`
+   - Repository: `morphy`
    - Workflow: `release.yml`
    - Environment: `pypi`
 3. On GitHub, create an environment named `pypi` at
@@ -20,19 +20,19 @@ project and turn the pending publisher into an active one.
 
 ## Release checklist
 
-1. **Update pinned HF revisions** in `opla/_revisions.py` if any upstream
+1. Update pinned HF revisions in `morphy/_revisions.py` if any upstream
    weights should be refreshed. If you've uploaded new AG/med weights to
-   `ciscoriordan/opla`, update `OPLA_WEIGHTS_REV` to the new commit SHA.
-2. **Bump version** in `opla/__init__.py` (`__version__`). `pyproject.toml`
+   `ciscoriordan/morphy`, update `MORPHY_WEIGHTS_REV` to the new commit SHA.
+2. Bump version in `morphy/__init__.py` (`__version__`). `pyproject.toml`
    reads from this automatically.
-3. **Run the full test suite** on a GPU box:
+3. Run the full test suite on a GPU box:
    ```bash
    python -m pytest tests/ -x -v --run-slow
    ```
-4. **Commit** the version bump and any revision updates.
-5. **Tag** with a leading `v`, matching `__version__`:
+4. Commit the version bump and any revision updates.
+5. Tag with a leading `v`, matching `__version__`:
    ```bash
-   git tag v0.2.0
+   git tag v0.3.0
    git push origin master --tags
    ```
 6. The `release.yml` workflow builds the sdist + wheel, publishes to PyPI,
@@ -40,11 +40,11 @@ project and turn the pending publisher into an active one.
 
 ## Version policy
 
-Opla follows semver once a 1.0 is cut. Pre-1.0, minor bumps (0.2 -> 0.3) may
+Morphy follows semver once a 1.0 is cut. Pre-1.0, minor bumps (0.2 -> 0.3) may
 break output formats or the Python API; patch bumps (0.2.0 -> 0.2.1) are
 bug-only.
 
-**Weight compatibility**: each Opla version pins exact HF Hub commit SHAs
+Weight compatibility: each Morphy version pins exact HF Hub commit SHAs
 for all four upstream sources (gr-nlp-toolkit, GreekBERT, Ancient-Greek-BERT,
-and ciscoriordan/opla). Installing the same Opla version on different
+and ciscoriordan/morphy). Installing the same Morphy version on different
 machines or at different times will download byte-identical weights.

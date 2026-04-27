@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Export Opla's polylas_tags.json to CoNLL-U for gold treebank correction.
+"""Export Morphy's polylas_tags.json to CoNLL-U for gold treebank correction.
 
-Reads Opla's POS/DP output from iliad-align and aligns it with the
+Reads Morphy's POS/DP output from iliad-align and aligns it with the
 original accented Polylas-Riordan source text to produce a CoNLL-U file.
 
 The output is meant for manual correction of dependency heads - fix the
-HEAD column, then use the corrected file to fine-tune Opla on Polylas text.
+HEAD column, then use the corrected file to fine-tune Morphy on Polylas text.
 
 Punctuation tokens are reconstructed from the source text and inserted
 with UPOS=PUNCT. Head indices are remapped to account for the inserted
@@ -36,7 +36,7 @@ OUTPUT_PATH = SCRIPT_DIR / "data" / "polylas_gold.conllu"
 
 
 def strip_accents_and_lowercase(s: str) -> str:
-    """Match GreekBERT/Opla preprocessing exactly."""
+    """Match GreekBERT/Morphy preprocessing exactly."""
     return "".join(
         c for c in unicodedata.normalize("NFD", s)
         if unicodedata.category(c) != "Mn"
@@ -44,7 +44,7 @@ def strip_accents_and_lowercase(s: str) -> str:
 
 
 def align_tags_to_source(text: str, tag_tokens: list[dict]) -> list[dict]:
-    """Align Opla tag tokens to the original accented source text.
+    """Align Morphy tag tokens to the original accented source text.
 
     Scans the source text character by character, matching each tag token's
     normalized form to recover the original accented span. Characters between
@@ -129,7 +129,7 @@ def feats_to_str(feats: dict) -> str:
 def build_conllu_sentence(
     book: int, line_num: int, text: str, tag_entry: dict
 ) -> str:
-    """Build a CoNLL-U sentence block from source text and Opla tags.
+    """Build a CoNLL-U sentence block from source text and Morphy tags.
 
     Aligns tag tokens to the original accented text via character scanning,
     inserts PUNCT tokens for unmatched punctuation, and remaps HEAD indices.
@@ -244,7 +244,7 @@ def export_books(books: list[int], sample: int = 0) -> str:
 def main():
     import argparse
     parser = argparse.ArgumentParser(
-        description="Export Opla tags to CoNLL-U for gold treebank correction"
+        description="Export Morphy tags to CoNLL-U for gold treebank correction"
     )
     parser.add_argument("start", nargs="?", type=int, default=None,
                         help="First book (default: 1)")

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Convert DiGreC PROIEL XML treebank to CoNLL-U format for Opla training.
+"""Convert DiGreC PROIEL XML treebank to CoNLL-U format for Morphy training.
 
 DiGreC uses PROIEL annotation scheme. This script converts:
 - PROIEL POS tags -> UD UPOS tags

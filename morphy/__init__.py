@@ -1,10 +1,10 @@
-"""Opla: GPU-optimized Greek POS tagger + dependency parser.
+"""Morphy: GPU-optimized Greek POS tagger + dependency parser.
 
 Usage:
-    from opla import Opla
+    from morphy import Morphy
 
-    model = Opla(device="cuda")                    # MG (default)
-    model = Opla(lang="grc", device="cuda")        # Ancient Greek
+    model = Morphy(device="cuda")                    # MG (default)
+    model = Morphy(lang="grc", device="cuda")        # Ancient Greek
     results = model.tag(["Ο Αχιλλέας πολεμά"])
 """
 
@@ -13,15 +13,15 @@ from pathlib import Path
 import torch
 from transformers import AutoModel
 
-from .model import OplaModel
+from .model import MorphyModel
 from .labels import EL_POS_LABEL_COUNTS, EL_DP_LABEL_COUNT
 from .weights import load_weights
 from .tokenize import batch_tokenize
 from .decode import decode_batch
 from .segment import segment
-from ._revisions import BERT_REVISIONS, OPLA_WEIGHTS_REV
+from ._revisions import BERT_REVISIONS, MORPHY_WEIGHTS_REV
 
-__version__ = "0.2.1"
+__version__ = "0.3.0"
 
 # Maximum subwords per dynamic batch before flushing to GPU
 _DEFAULT_MAX_SUBWORDS = 2048
@@ -36,7 +36,7 @@ _BERT_MODELS = {
 _WEIGHTS_DIR = Path(__file__).parent.parent / "weights"
 
 
-class Opla:
+class Morphy:
     """Greek POS tagger and dependency parser with integrated lemmatization.
 
     Supports Modern Greek (el) via gr-nlp-toolkit weights and Ancient Greek
@@ -102,7 +102,7 @@ class Opla:
         weights if no checkpoint exists.
         """
         # Prefer fine-tuned single-backbone checkpoint
-        finetuned = _WEIGHTS_DIR / "el" / "opla_el.pt"
+        finetuned = _WEIGHTS_DIR / "el" / "morphy_el.pt"
         if finetuned.exists():
             self._init_grc_from_file(str(finetuned), fallback_bert="el")
             return
@@ -113,7 +113,7 @@ class Opla:
         pos_bert = AutoModel.from_pretrained(bert_name, revision=bert_rev)
         dp_bert = AutoModel.from_pretrained(bert_name, revision=bert_rev)
         # Use MG-sized label counts for gr-nlp-toolkit weight compatibility
-        self.model = OplaModel(
+        self.model = MorphyModel(
             pos_bert, dp_bert,
             feat_sizes=EL_POS_LABEL_COUNTS,
             num_deprels=EL_DP_LABEL_COUNT,
@@ -131,7 +131,7 @@ class Opla:
         bert = AutoModel.from_pretrained(
             bert_name, revision=BERT_REVISIONS.get(bert_name)
         )
-        self.model = OplaModel(
+        self.model = MorphyModel(
             bert,
             feat_sizes=feat_sizes,
             num_deprels=num_deprels,
@@ -146,10 +146,10 @@ class Opla:
         """
         # Try ONNX if explicitly requested via checkpoint="onnx"
         onnx_dir = _WEIGHTS_DIR / self.lang / "onnx"
-        if checkpoint == "onnx" and (onnx_dir / "opla_joint.onnx").exists():
+        if checkpoint == "onnx" and (onnx_dir / "morphy_joint.onnx").exists():
             try:
-                from .onnx_model import OplaONNX
-                self.model = OplaONNX(onnx_dir)
+                from .onnx_model import MorphyONNX
+                self.model = MorphyONNX(onnx_dir)
                 self._using_onnx = True
                 return
             except ImportError:
@@ -158,16 +158,16 @@ class Opla:
         self._using_onnx = False
 
         if checkpoint is None:
-            default = _WEIGHTS_DIR / self.lang / f"opla_{self.lang}.pt"
+            default = _WEIGHTS_DIR / self.lang / f"morphy_{self.lang}.pt"
             if default.exists():
                 checkpoint = str(default)
             else:
                 try:
                     from huggingface_hub import hf_hub_download
                     checkpoint = hf_hub_download(
-                        repo_id="ciscoriordan/opla",
-                        filename=f"weights/{self.lang}/opla_{self.lang}.pt",
-                        revision=OPLA_WEIGHTS_REV,
+                        repo_id="ciscoriordan/morphy",
+                        filename=f"weights/{self.lang}/morphy_{self.lang}.pt",
+                        revision=MORPHY_WEIGHTS_REV,
                     )
                 except Exception:
                     raise FileNotFoundError(

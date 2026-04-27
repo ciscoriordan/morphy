@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Train Opla POS+DP heads on Universal Dependencies treebanks.
+"""Train Morphy POS+DP heads on Universal Dependencies treebanks.
 
 Usage:
     python train.py                          # train AG heads on Perseus + PROIEL
@@ -20,9 +20,9 @@ import torch.nn as nn
 from torch.utils.data import DataLoader, Dataset
 from transformers import AutoModel, AutoTokenizer
 
-from opla.labels import pos_labels, dp_labels, pos_properties
-from opla.model import OplaModel
-from opla.tokenize import strip_accents_and_lowercase
+from morphy.labels import pos_labels, dp_labels, pos_properties
+from morphy.model import MorphyModel
+from morphy.tokenize import strip_accents_and_lowercase
 
 if sys.stdout.encoding != "utf-8":
     sys.stdout.reconfigure(encoding="utf-8")
@@ -345,7 +345,7 @@ def evaluate(model, dataloader, device, feat_to_l2i, deprel_l2i):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Train Opla POS+DP heads")
+    parser = argparse.ArgumentParser(description="Train Morphy POS+DP heads")
     parser.add_argument("--lang", default="grc", choices=["grc", "el", "med"],
                         help="Language to train (default: grc)")
     parser.add_argument("--data", nargs="+",
@@ -463,7 +463,7 @@ def main():
     print(f"\nLoading BERT: {args.bert}")
     bert = AutoModel.from_pretrained(args.bert)
     feat_sizes = {k: len(v) for k, v in pos_labels.items()}
-    model = OplaModel(bert, feat_sizes=feat_sizes, num_deprels=len(dp_labels))
+    model = MorphyModel(bert, feat_sizes=feat_sizes, num_deprels=len(dp_labels))
     model.to(device)
 
     start_epoch = 0
@@ -518,15 +518,15 @@ def main():
             "feat_sizes": feat_sizes,
             "num_deprels": len(dp_labels),
         }
-        torch.save(checkpoint, args.output / f"opla_{args.lang}_epoch{epoch}.pt")
+        torch.save(checkpoint, args.output / f"morphy_{args.lang}_epoch{epoch}.pt")
 
     # Save final weights
-    final_path = args.output / f"opla_{args.lang}.pt"
+    final_path = args.output / f"morphy_{args.lang}.pt"
     torch.save(checkpoint, final_path)
     print(f"\nSaved final model to {final_path}")
 
     # Clean up per-epoch checkpoints (keep only final)
-    for epoch_file in args.output.glob(f"opla_{args.lang}_epoch*.pt"):
+    for epoch_file in args.output.glob(f"morphy_{args.lang}_epoch*.pt"):
         epoch_file.unlink()
         print(f"  Removed training checkpoint: {epoch_file.name}")
 

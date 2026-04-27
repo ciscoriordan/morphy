@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Benchmark Opla POS tagger against CoNLL-U test sets.
+"""Benchmark Morphy POS tagger against CoNLL-U test sets.
 
 Evaluates on:
   - UD Ancient Greek Perseus (test split)
@@ -17,7 +17,7 @@ from pathlib import Path
 if sys.stdout.encoding != "utf-8":
     sys.stdout.reconfigure(encoding="utf-8")
 
-from opla import Opla
+from morphy import Morphy
 
 
 def load_conllu(path: Path) -> list[list[dict]]:
@@ -50,8 +50,8 @@ def load_conllu(path: Path) -> list[list[dict]]:
     return sentences
 
 
-def evaluate(opla: Opla, sentences: list[list[dict]]) -> dict:
-    """Run Opla on sentences and compare against gold UPOS."""
+def evaluate(morphy: Morphy, sentences: list[list[dict]]) -> dict:
+    """Run Morphy on sentences and compare against gold UPOS."""
     # Build input strings
     texts = [" ".join(tok["form"] for tok in sent) for sent in sentences]
 
@@ -60,7 +60,7 @@ def evaluate(opla: Opla, sentences: list[list[dict]]) -> dict:
     all_preds = []
     for i in range(0, len(texts), batch_size):
         batch = texts[i:i + batch_size]
-        preds = opla.tag(batch)
+        preds = morphy.tag(batch)
         all_preds.extend(preds)
 
     total = 0
@@ -95,8 +95,8 @@ def main():
         ("DiGreC (test)", data_dir / "DiGreC" / "digrec-test.conllu"),
     ]
 
-    print("Loading Opla (lang=grc)...")
-    opla = Opla(lang="grc")
+    print("Loading Morphy (lang=grc)...")
+    morphy = Morphy(lang="grc")
     print()
 
     for name, path in datasets:
@@ -108,7 +108,7 @@ def main():
         print(f"{name}: {len(sentences)} sentences, "
               f"{sum(len(s) for s in sentences)} tokens")
 
-        results = evaluate(opla, sentences)
+        results = evaluate(morphy, sentences)
         print(f"  UPOS accuracy: {results['upos_correct']}/{results['total']} "
               f"({results['upos_acc']:.1%})")
         print(f"  DEPREL accuracy: {results['deprel_correct']}/{results['total']} "

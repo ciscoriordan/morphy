@@ -85,8 +85,8 @@ def main():
 
     # Load PyTorch model
     print("Loading PyTorch model...")
-    from opla import Opla
-    pt_model = Opla(lang="grc", device="cpu", lemmatize=False)
+    from morphy import Morphy
+    pt_model = Morphy(lang="grc", device="cpu", lemmatize=False)
     print("  PyTorch model loaded.")
 
     # Run PyTorch inference
@@ -100,7 +100,7 @@ def main():
 
     # Load ONNX model
     print("Loading ONNX model...")
-    onnx_model = Opla(lang="grc", checkpoint="onnx", device="cpu", lemmatize=False)
+    onnx_model = Morphy(lang="grc", checkpoint="onnx", device="cpu", lemmatize=False)
     print(f"  ONNX model loaded (using_onnx={getattr(onnx_model, '_using_onnx', 'N/A')}).")
 
     # Run ONNX inference

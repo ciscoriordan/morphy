@@ -1,7 +1,7 @@
-# Opla <img src="https://raw.githubusercontent.com/ciscoriordan/svg-flags/main/circle/languages/el.svg" width="28" alt="Greek"> <img src="https://raw.githubusercontent.com/ciscoriordan/svg-flags/main/circle/countries/cy.svg" width="28" alt="Cyprus"> <img src="https://raw.githubusercontent.com/ciscoriordan/svg-flags/main/circle/historical/byzantine.svg" width="28" alt="Byzantine"> <img src="https://raw.githubusercontent.com/ciscoriordan/svg-flags/main/circle/historical/ancient-greece.svg" width="28" alt="Ancient Greece">
+# Morphy <img src="https://raw.githubusercontent.com/ciscoriordan/svg-flags/main/circle/languages/el.svg" width="28" alt="Greek"> <img src="https://raw.githubusercontent.com/ciscoriordan/svg-flags/main/circle/countries/cy.svg" width="28" alt="Cyprus"> <img src="https://raw.githubusercontent.com/ciscoriordan/svg-flags/main/circle/historical/byzantine.svg" width="28" alt="Byzantine"> <img src="https://raw.githubusercontent.com/ciscoriordan/svg-flags/main/circle/historical/ancient-greece.svg" width="28" alt="Ancient Greece">
 
 <p align="center">
-  <img src="opla-social.jpg" width="720" alt="Opla - diachronic Greek POS tagger and dependency parser">
+  <img src="morphy-social.jpg" width="720" alt="Morphy - diachronic Greek POS tagger and dependency parser">
 </p>
 
 GPU-optimized diachronic Greek POS tagger and dependency parser. ~25x faster than
@@ -9,7 +9,7 @@ GPU-optimized diachronic Greek POS tagger and dependency parser. ~25x faster tha
 Greek text, with identical POS output and near-identical dependency parsing.
 Supports Modern Greek, Ancient Greek, and Medieval Greek.
 
-Opla (from Ancient Greek `ὅπλα`, "tools, equipment") is a drop-in replacement
+Morphy (from Ancient Greek `μορφή`, "form, shape") is a drop-in replacement
 for *gr-nlp-toolkit*'s POS and DP processors. It reuses *gr-nlp-toolkit*'s
 trained weights for Modern Greek and adds Ancient Greek support via
 custom-trained heads on [Ancient-Greek-BERT](https://huggingface.co/pranaydeeps/Ancient-Greek-BERT).
@@ -17,12 +17,12 @@ custom-trained heads on [Ancient-Greek-BERT](https://huggingface.co/pranaydeeps/
 ## Installation
 
 ```bash
-pip install opla-nlp
+pip install morphy-nlp
 ```
 
-The import name is `opla` (`from opla import Opla`); the PyPI
-distribution is `opla-nlp` because `opla` was blocked by PyPI's
-similar-name filter.
+The import name is `morphy` (`from morphy import Morphy`); the PyPI
+distribution is `morphy-nlp` because `morphy` is taken on PyPI by an
+unrelated package.
 
 Or from source:
 
@@ -33,9 +33,9 @@ pip install -e .
 Requires *PyTorch* (2.5+), *Transformers*, and *huggingface-hub*. MG weights are
 downloaded from [AUEB-NLP/gr-nlp-toolkit](https://huggingface.co/AUEB-NLP/gr-nlp-toolkit)
 on first use; AG and Medieval weights from
-[ciscoriordan/opla](https://huggingface.co/ciscoriordan/opla). Each Opla
+[ciscoriordan/morphy](https://huggingface.co/ciscoriordan/morphy). Each Morphy
 release pins exact HuggingFace Hub commit SHAs for all four upstream
-sources (see `opla/_revisions.py`), so the same Opla version always pulls
+sources (see `morphy/_revisions.py`), so the same Morphy version always pulls
 byte-identical weights.
 
 Optional: install [Dilemma](https://github.com/ciscoriordan/dilemma) for
@@ -49,15 +49,15 @@ python -m dilemma download
 The first line installs the package plus ONNX Runtime; the second downloads
 the ~1.6 GB lookup tables and model files to `~/.cache/dilemma/`. Dilemma is
 not on PyPI (a same-named unrelated package exists there), so there is no
-`opla[lemma]` extra.
+`morphy[lemma]` extra.
 
 ## Usage
 
 ```python
-from opla import Opla
+from morphy import Morphy
 
-model = Opla(lang="el", device="cuda")    # Modern Greek
-model = Opla(lang="grc", device="cuda")   # Ancient Greek
+model = Morphy(lang="el", device="cuda")    # Modern Greek
+model = Morphy(lang="grc", device="cuda")   # Ancient Greek
 
 results = model.tag(["Ο Αχιλλέας πολεμά", "Η Ελένη φεύγει"])
 
@@ -70,7 +70,7 @@ for token in results[0]:
 # ...
 ```
 
-Pass any number of sentences. Opla handles batching internally.
+Pass any number of sentences. Morphy handles batching internally.
 
 ### Automatic sentence segmentation
 
@@ -87,7 +87,7 @@ results = model.tag(text, segment_text=True)
 The segmenter can also be used standalone:
 
 ```python
-from opla.segment import segment
+from morphy.segment import segment
 sentences = segment("π.χ. αυτό είναι μία πρόταση. Αυτή είναι άλλη.")
 # ['π.χ. αυτό είναι μία πρόταση.', 'Αυτή είναι άλλη.']
 ```
@@ -95,7 +95,7 @@ sentences = segment("π.χ. αυτό είναι μία πρόταση. Αυτή 
 ### Options
 
 ```python
-Opla(
+Morphy(
     device="cuda",       # "cuda", "cpu", or None (auto-detect)
     lemmatize=True,      # include Dilemma lemmas in output
     lemma_cache=cache,   # pre-built {form: lemma} dict (skip Dilemma for hits)
@@ -114,7 +114,7 @@ accuracy for authors like Herodotus (Ionic), Pindar (Doric), or Sappho
 
 ```python
 # Tag Herodotus with Ionic dialect normalization
-model = Opla(lang="grc", dialect="ionic")
+model = Morphy(lang="grc", dialect="ionic")
 results = model.tag(["ταῦτα μέν νυν Πέρσαι τε καὶ Φοίνικες λέγουσι"])
 ```
 
@@ -128,10 +128,10 @@ which handles the normalization.
 The trained BERT weights are good. The inference code needed work.
 Our [PR #29](https://github.com/nlpaueb/gr-nlp-toolkit/pull/29) fixing the
 redundant BERT forward passes was merged upstream on 2026-04-18, accounting
-for ~8.5x of the speedup measured below. Opla goes further on batching,
+for ~8.5x of the speedup measured below. Morphy goes further on batching,
 VRAM, output filtering, and AG/Medieval support.
 
-| Issue | *gr-nlp-toolkit* | Opla |
+| Issue | *gr-nlp-toolkit* | Morphy |
 |-------|-----------------|------|
 | BERT forward passes per sentence | Was 19 (POS looped over 17 features, calling BERT each time; DP called BERT twice), now 2 after PR #29 | 2 (one per task) |
 | Batching | `batch_size=1` hardcoded | Dynamic batching (~64-150 sentences) |
@@ -144,11 +144,11 @@ VRAM, output filtering, and AG/Medieval support.
 
 Numbers below are against *gr-nlp-toolkit* before PR #29 was merged (the
 version on PyPI at time of measurement). Post-PR-#29, upstream's per-sentence
-cost drops by ~8.5x, so Opla's advantage on the same workload becomes ~25x
-rather than 215x, driven mostly by dynamic batching. Opla still uniquely
+cost drops by ~8.5x, so Morphy's advantage on the same workload becomes ~25x
+rather than 215x, driven mostly by dynamic batching. Morphy still uniquely
 covers Ancient and Medieval Greek.
 
-| | *gr-nlp-toolkit* (pre-PR-#29) | Opla | Speedup |
+| | *gr-nlp-toolkit* (pre-PR-#29) | Morphy | Speedup |
 |---|---|---|---|
 | Full Iliad (24 books, 146K tokens) | 4,193s (70 min) | 19.5s | 215x |
 | Book 1 (611 sentences, 5,772 tokens) | 169.4s | 1.0s | 170x |
@@ -174,7 +174,7 @@ redistribution bonding) are 99.8% identical.
 
 ## Architecture
 
-For `lang="el"`, Opla loads *gr-nlp-toolkit*'s pre-trained weights from
+For `lang="el"`, Morphy loads *gr-nlp-toolkit*'s pre-trained weights from
 [AUEB-NLP/gr-nlp-toolkit](https://huggingface.co/AUEB-NLP/gr-nlp-toolkit)
 on HuggingFace and remaps them into a dual-backbone architecture on
 [GreekBERT](https://huggingface.co/nlpaueb/bert-base-greek-uncased-v1):
@@ -202,7 +202,7 @@ trained POS and DP with independent backbones that diverged during training.
 Using the POS BERT for DP (or vice versa) degrades accuracy. This is still
 a 9.5x reduction in BERT forward passes (2 vs 19).
 
-For `lang="grc"` and `lang="med"`, Opla uses a single
+For `lang="grc"` and `lang="med"`, Morphy uses a single
 [Ancient-Greek-BERT](https://huggingface.co/pranaydeeps/Ancient-Greek-BERT)
 backbone with jointly trained POS+DP heads, requiring only one BERT forward
 pass per batch.
@@ -217,7 +217,7 @@ text (~13 subwords per sentence), this means ~150 sentences per batch.
 ### Integrated lemmatization
 
 When [Dilemma](https://github.com/ciscoriordan/dilemma) is installed and
-`lemmatize=True`, Opla preloads Dilemma's lookup tables at init time for
+`lemmatize=True`, Morphy preloads Dilemma's lookup tables at init time for
 faster batch tagging. It then uses POS-aware lemmatization via
 `lemmatize_batch_pos()`, passing each
 token's predicted UPOS tag to Dilemma for disambiguation (e.g., distinguishing
@@ -235,7 +235,7 @@ from dilemma import Dilemma
 d = Dilemma(lang="grc")
 cache = d.export_cache()  # {form: lemma} for all 12M+ forms
 
-model = Opla(lang="grc", lemma_cache=cache)
+model = Morphy(lang="grc", lemma_cache=cache)
 # Dilemma is only called for forms not in the cache
 ```
 
@@ -248,19 +248,19 @@ deployment with `onnxruntime` instead of PyTorch. For AG/med models
 
 ```bash
 # Export AG model to ONNX (~535 MB)
-python export_onnx.py --lang grc --weights weights/grc/opla_grc.pt
+python export_onnx.py --lang grc --weights weights/grc/morphy_grc.pt
 
-# Output goes to weights/grc/onnx/opla_joint.onnx by default
+# Output goes to weights/grc/onnx/morphy_joint.onnx by default
 ```
 
 To load the ONNX model at inference time, pass `checkpoint="onnx"`:
 
 ```python
-model = Opla(lang="grc", checkpoint="onnx")
+model = Morphy(lang="grc", checkpoint="onnx")
 ```
 
 This requires `onnxruntime` (`pip install onnxruntime`). If ONNX weights
-are not found or `onnxruntime` is not installed, Opla falls back to the
+are not found or `onnxruntime` is not installed, Morphy falls back to the
 standard PyTorch checkpoint.
 
 ## Output format
@@ -283,9 +283,9 @@ predicted UPOS tag are included. Underscore (`_`) values are suppressed.
 ## Files
 
 ```
-opla/
-    __init__.py      # Opla class, public API, dynamic batching
-    model.py         # OplaModel - dual BERT + POS heads + DP biaffine heads
+morphy/
+    __init__.py      # Morphy class, public API, dynamic batching
+    model.py         # MorphyModel - dual BERT + POS heads + DP biaffine heads
     weights.py       # Weight loading + key remapping from gr-nlp-toolkit
     tokenize.py      # Batched tokenization with subword-to-word mapping
     decode.py        # Decode logits to structured token dicts
@@ -298,7 +298,7 @@ convert_gorman.py    # Convert Gorman AGDT XML to CoNLL-U for grc training
 export_onnx.py       # Export model to ONNX format for CPU deployment
 upload_weights.py    # Upload trained weights to HuggingFace
 tests/
-    test_opla.py     # Test suite (pytest): segmentation, tokenization, labels, POS, DP, lemma
+    test_morphy.py   # Test suite (pytest): segmentation, tokenization, labels, POS, DP, lemma
     conftest.py      # pytest config: --run-slow flag for tests requiring model weights
 ```
 
@@ -327,7 +327,7 @@ accents (NFD + remove combining marks), so all Greek text is normalized to
 unaccented lowercase before entering the model.
 
 POS and DP task heads come from *gr-nlp-toolkit*'s pre-trained weights,
-which were fine-tuned on top of GreekBERT. Opla handles Katharevousa well
+which were fine-tuned on top of GreekBERT. Morphy handles Katharevousa well
 despite the MG training data because the BERT vocabulary covers the full
 Greek script and most Katharevousa forms share stems with their MG
 equivalents.
@@ -341,7 +341,7 @@ Gold Standard (88K tokens, CLARIN:EL, openUnder-PSI) provides POS-tagged
 Modern Greek text but uses the ILSP tagset (386 tags like `NoCmFeSgNm`)
 rather than UD. The coarse categories map to UPOS (No->NOUN, Vb->VERB,
 Aj->ADJ, etc.) but the morphological features are encoded differently,
-making it unsuitable as training or evaluation data for Opla without a
+making it unsuitable as training or evaluation data for Morphy without a
 substantial tagset mapping effort. The HNC is used by
 [Dilemma](https://github.com/ciscoriordan/dilemma) for MG lemmatization
 evaluation instead.
@@ -377,7 +377,7 @@ AG uses an expanded label set: dual number, optative/subjunctive moods,
 middle voice, locative case, and more.
 
 To retrain from scratch: `python train.py --lang grc --epochs 10`
-To fine-tune with DiGreC: `python train.py --resume weights/grc/opla_grc.pt --data data/UD_Ancient_Greek-Perseus/grc_perseus-ud-train.conllu data/UD_Ancient_Greek-PROIEL/grc_proiel-ud-train.conllu data/DiGreC/digrec-train.conllu --dev data/DiGreC/digrec-dev.conllu --epochs 3 --lr 1e-5`
+To fine-tune with DiGreC: `python train.py --resume weights/grc/morphy_grc.pt --data data/UD_Ancient_Greek-Perseus/grc_perseus-ud-train.conllu data/UD_Ancient_Greek-PROIEL/grc_proiel-ud-train.conllu data/DiGreC/digrec-train.conllu --dev data/DiGreC/digrec-dev.conllu --epochs 3 --lr 1e-5`
 
 ### Medieval/Byzantine Greek
 
@@ -388,7 +388,7 @@ backbone as `grc`, with POS+DP heads trained on the
 Medieval Greek prose spanning Homer to early modern Greek (Thucydides,
 Herodotus, Anna Komnene, Chronicle of Morea, and more).
 
-DiGreC uses the PROIEL annotation scheme. Opla's `convert_digrec.py` script
+DiGreC uses the PROIEL annotation scheme. Morphy's `convert_digrec.py` script
 converts it to UD-compatible CoNLL-U format with refined deprel mappings
 (PROIEL `aux` -> UD `det`/`discourse`/`cc`/`mark`/`advmod` by POS;
 `adv`+preposition -> `case`; `atr` -> `amod`/`nmod`/`det`/`nummod` by POS;
@@ -413,15 +413,15 @@ To train: `python convert_digrec.py && python train.py --lang med --epochs 12`
 ### Multi-period API
 
 ```python
-model = Opla(lang="el", device="cuda")    # Modern Greek
-model = Opla(lang="grc", device="cuda")   # Ancient Greek
-model = Opla(lang="med", device="cuda")   # Medieval/Byzantine Greek
+model = Morphy(lang="el", device="cuda")    # Modern Greek
+model = Morphy(lang="grc", device="cuda")   # Ancient Greek
+model = Morphy(lang="med", device="cuda")   # Medieval/Byzantine Greek
 ```
 
 Language codes: `el` (ISO 639-1), `grc` (ISO 639-2), `med` (Medieval
 Greek). These codes are shared with
 [Dilemma](https://github.com/ciscoriordan/dilemma), but the two tools
-group `med` differently. Opla groups `med` with `grc` (shared BERT
+group `med` differently. Morphy groups `med` with `grc` (shared BERT
 backbone and task heads) because Medieval *syntax* - polytonic script,
 full case system, optative mood - is closer to Ancient Greek.
 Dilemma groups `med` with `el` for lemma lookup because Medieval
@@ -440,7 +440,7 @@ MG task heads:
 POS and DP head architectures reproduced from *gr-nlp-toolkit*'s source code
 to ensure weight compatibility. The redundant BERT forward passes fixed by
 [PR #29](https://github.com/nlpaueb/gr-nlp-toolkit/pull/29) were discovered
-while using *gr-nlp-toolkit* to instrument Opla.
+while using *gr-nlp-toolkit* to instrument Morphy.
 
 Ancient Greek backbone:
 [Ancient-Greek-BERT](https://huggingface.co/pranaydeeps/Ancient-Greek-BERT)
@@ -459,7 +459,7 @@ Medieval Greek training data:
 PROIEL project. 121K tokens of Medieval Greek with morphological and syntactic
 annotation in the PROIEL scheme.
 
-If you use Opla, please also cite:
+If you use Morphy, please also cite:
 
 ```
 Koutsikakis et al., "GREEK-BERT: The Greeks Visiting Sesame Street" (2020).
@@ -472,8 +472,8 @@ Gorman, "Dependency Trees for Ancient Greek Prose" (2020).
 ## How to Cite
 
 ```
-Francisco Riordan, "Opla: GPU-Optimized Greek POS Tagger and Dependency Parser" (2026).
-https://github.com/ciscoriordan/opla
+Francisco Riordan, "Morphy: GPU-Optimized Greek POS Tagger and Dependency Parser" (2026).
+https://github.com/ciscoriordan/morphy
 ```
 
 ## Related projects

@@ -1,4 +1,4 @@
-"""Pytest configuration for Opla tests."""
+"""Pytest configuration for Morphy tests."""
 
 import pytest
 
